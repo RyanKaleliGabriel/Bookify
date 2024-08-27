@@ -1,11 +1,14 @@
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const app = require("./app");
-
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'; 
+import app from './app';
 //Configure Environment variables
 dotenv.config({ path: "./config.env" });
 
 // Initialize database
+if (!process.env.DATABASE || !process.env.DATABASE_PASSWORD) {
+  throw new Error("Database environment variables not defined");
+}
+
 const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
   process.env.DATABASE_PASSWORD
