@@ -1,5 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 //Attendant Interface
 export interface AttendantDocument extends Document {
@@ -15,14 +16,17 @@ export interface AttendantDocument extends Document {
   password: string;
   passwordConfirm: string;
   active: boolean;
-  created_at: object;
-  passwordChangedAt: object;
+  created_at: any;
+  passwordChangedAt: any;
   passwordResetToken: string;
-  passwordResetExpires: object;
+  passwordResetExpires: any;
+  role: string;
   correctPassword(
     candidatePassword: string,
     attendantPassword: string
   ): Promise<boolean>;
+  changedPasswordAfter(JWTTimestamp: number): boolean;
+  createPasswordResetToken(): string;
 }
 
 //Schema configuration
@@ -93,6 +97,10 @@ const attendantSchema = new Schema<AttendantDocument>({
     default: true,
     select: false,
   },
+  role: {
+    type: String,
+    default: "attendant",
+  },
 });
 
 // passwords compare validations
@@ -110,11 +118,45 @@ attendantSchema.pre("save", async function (next) {
   this.passwordConfirm = "";
 });
 
+attendantSchema.pre("save", function (next) {
+  //returns false when updating - because this.isModified returns true and is negated to false and this.New returns false
+  //returns true when creationg a new password - false + true (0+1) = 1
+  if (!this.isModified("password") || this.isNew) return next();
+  //Token should be created after the password has changed
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 attendantSchema.methods.correctPassword = async function (
   candidatePassword: string,
   attendantPassword: string
 ) {
   return await bcrypt.compare(candidatePassword, attendantPassword);
+};
+
+attendantSchema.methods.changedPasswordAfter = function (JWTTimestamp: number) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      String(this.passwordChangedAt.getTime() / 1000),
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
+};
+
+attendantSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 const Attendant = model<AttendantDocument>("Attendant", attendantSchema);
