@@ -8,6 +8,7 @@ import {
   signup,
   updatePassword,
 } from "../controllers/authController";
+import { deleteMe, getMe, updateMe } from "../controllers/userController";
 
 //Initialise express router
 const router = express.Router();
@@ -22,5 +23,9 @@ router.use(protect);
 router.patch("/updatePassword", updatePassword);
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword)
+
+router.get("/getMe", getMe)
+router.delete("/deleteMe", deleteMe)
+router.patch("/updateMe", updateMe)
 
 export default router;

@@ -99,7 +99,7 @@ const attendantSchema = new Schema<AttendantDocument>({
   },
   role: {
     type: String,
-    default: "attendant",
+    select:false
   },
 });
 
@@ -161,3 +161,4 @@ attendantSchema.methods.createPasswordResetToken = function () {
 
 const Attendant = model<AttendantDocument>("Attendant", attendantSchema);
 export default Attendant;
+
