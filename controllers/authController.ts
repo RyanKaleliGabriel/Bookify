@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import Attendant from "../models/Attendant";
+import Client from "../models/Client";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import Email from "../utils/email";
@@ -46,21 +47,29 @@ const createSendToken = (
 //Sign up handler
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
-    const newAttendant = await Attendant.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm,
-    });
-    createSendToken(newAttendant, 201, res, req);
+    const role = req.body.role;
+    const newUser =
+      role === "attendant"
+        ? await Attendant.create({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            passwordConfirm: req.body.passwordConfirm,
+          })
+        : await Client.create({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            passwordConfirm: req.body.passwordConfirm,
+          });
+
+    createSendToken(newUser, 201, res, req);
   }
 );
 
 //Login handler
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
     // Destructure the email and password from the payload
     const { email, password } = req.body;
 
@@ -69,18 +78,21 @@ export const login = catchAsync(
       return next(new AppError("Provide email and password!", 400));
     }
     //query the user using the email input
-    const attendant = await Attendant.findOne({ email }).select("+password");
+    const attendant = await Attendant.findOne({ email })
+      .select("+password")
+      .select("+role");
+    const client = await Client.findOne({ email })
+      .select("+password")
+      .select("+role");
+    const user = attendant ? attendant : client;
 
     //Check if user exists from the query if password is correct
-    if (
-      !attendant ||
-      !(await attendant.correctPassword(password, attendant.password))
-    ) {
+    if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError("Invalid email or password", 401));
     }
 
     //If everything is correct send jwt Token
-    createSendToken(attendant, 200, res, req);
+    createSendToken(user, 200, res, req);
   }
 );
 
@@ -126,7 +138,10 @@ export const protect = catchAsync(
     const decoded: any = await verifyToken(token, process.env.JWT_SECRET!);
 
     //Check if user still exists. The user may be deleted
-    const currentUser = await Attendant.findById(decoded.id);
+    const currentAttendant = await Attendant.findById(decoded.id);
+    const currentClient = await Client.findById(decoded.id);
+    const currentUser = currentAttendant ? currentAttendant : currentClient;
+
     if (!currentUser) {
       return next(
         new AppError("The user belonging to this token no longer exists", 401)
@@ -134,7 +149,7 @@ export const protect = catchAsync(
     }
 
     //Check if user changed password after token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
+    if (currentUser!.changedPasswordAfter(decoded.iat)) {
       return next(
         new AppError("Recently changed password! PLease login again", 401)
       );
@@ -150,23 +165,25 @@ export const protect = catchAsync(
 export const updatePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     //Get user from collection
+
     const attendant = await Attendant.findById(req.user.id).select("+password");
+    const client = await Client.findById(req.user.id).select("+password");
+    const user = attendant ? attendant : client;
 
     //Confirm if current(previous) password is correct
-
     if (req.body.passwordConfirm !== req.body.password) {
       return next(new AppError("Passwords do not match", 401));
     }
 
     if (
-      !(await attendant!.correctPassword(
+      !(await user!.correctPassword(
         req.body.passwordCurrent,
-        attendant!.password
+        user!.password
       ))
     ) {
       return next(new AppError("Current password is not correct", 401));
     } else if (
-      await attendant!.correctPassword(req.body.password, attendant!.password)
+      await user!.correctPassword(req.body.password, user!.password)
     ) {
       return next(
         new AppError(
@@ -177,13 +194,12 @@ export const updatePassword = catchAsync(
     }
 
     //Update password
-    attendant!.password = req.body.password;
-    console.log(attendant!.password);
-    attendant!.passwordConfirm = req.body.passwordConfirm;
-    await attendant!.save();
+    user!.password = req.body.password;
+    user!.passwordConfirm = req.body.passwordConfirm;
+    await user!.save();
 
     //send jwt token
-    createSendToken(attendant, 201, res, req);
+    createSendToken(user, 201, res, req);
   }
 );
 
@@ -194,29 +210,39 @@ export const forgotPassword = catchAsync(
     const attendant = await Attendant.findOne({ email: req.body.email }).select(
       "+password"
     );
+    const client = await Client.findOne({ email: req.body.email }).select(
+      "+password"
+    );
+    const user = client ? client : attendant;
 
-    if (!attendant) {
+    if (!user) {
       return next(new AppError("There is no user with that email", 401));
     }
 
+    console.log(user)
+
+
     // If the user exists create a resetToken
-    const resetToken = attendant.createPasswordResetToken();
-    await attendant.save({ validateBeforeSave: false });
+    const resetToken = user.createPasswordResetToken();
+    console.log(resetToken)
+    await user.save({ validateBeforeSave: false });
 
     ///Send the token as an email
     try {
       const resetURL = `${req.protocol}://${req.get(
         "host"
-      )}/api/v1/resetPassword/${resetToken}`;
-      await new Email(attendant, resetURL).sendPasswordReset();
+      )}/api/v1/users/resetPassword/${resetToken}`;
+      console.log(resetURL)
+      await new Email(user, resetURL).sendPasswordReset();
       res.status(200).json({
         status: "success",
         message: "Token sent to email",
       });
     } catch (err) {
-      attendant.passwordResetToken = "";
-      attendant.passwordResetExpires = "";
-      await attendant.save({ validateBeforeSave: false });
+      console.log(err)
+      user.passwordResetToken = "";
+      user.passwordResetExpires = "";
+      await user.save({ validateBeforeSave: false });
       return next(
         new AppError(
           "There was an error sending the email. Try again later!",
@@ -240,19 +266,25 @@ export const resetPassword = catchAsync(
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() },
     });
+    const client = await Client.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+
+    const user = attendant ? attendant : client;
 
     //Set Password if token has not expired
-    if (!attendant) {
+    if (!user) {
       return next(new AppError("Token is invalid or has expired", 401));
     }
 
-    attendant!.password = req.body.password;
-    attendant!.passwordConfirm = req.body.passwordConfirm;
-    attendant.passwordResetExpires = "";
-    attendant.passwordResetToken = "";
+    user!.password = req.body.password;
+    user!.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetExpires = "";
+    user.passwordResetToken = "";
 
-    await attendant.save();
+    await user.save();
     //Send New Jwt Token
-    createSendToken(attendant, 200, res, req);
+    createSendToken(user, 200, res, req);
   }
 );

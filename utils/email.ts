@@ -11,14 +11,14 @@ interface Email {
 }
 
 class Email {
-  constructor(attendant: AttendantDocument, url: string) {
-    this.to = attendant.email;
-    this.firstName = attendant.name.split(" ")[0];
+  constructor(user: any, url: string) {
+    this.to = user.email;
+    this.firstName = user.name.split(" ")[0];
     this.url = url;
     this.from = `Bookify Corp. <${process.env.EMAIL_FROM}>`;
   }
 
-  newTransport(): Transporter {
+  newTransport() {
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: Number(process.env.EMAIL_PORT),
@@ -37,6 +37,7 @@ class Email {
       url: this.url,
       subject,
     });
+    console.log("here");
 
     const mailOptions = {
       from: this.from,
