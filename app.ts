@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/userRouter";
+import appointmentRouter from "./routes/appointmentRouter";
 import pug from "pug";
 import path from "path";
 
@@ -28,6 +29,7 @@ app.use(express.json());
 
 // API ROUTES
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/appointments/", appointmentRouter);
 
 // Global Error handling Middleware
 app.use(globalErrorController);

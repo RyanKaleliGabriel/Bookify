@@ -101,6 +101,7 @@ const attendantSchema = new Schema<AttendantDocument>({
     type: String,
     select:false
   },
+  
 });
 
 // passwords compare validations

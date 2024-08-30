@@ -161,6 +161,17 @@ export const protect = catchAsync(
   }
 );
 
+// Restricting middl
+
+export const restrictTo = (role: string) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (role !== req.user.role) {
+      return next(new AppError("Request restricted to authoroized users", 403));
+    }
+    next();
+  };
+};
+
 // UPDATE PASSWORD HANDLER
 export const updatePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -176,15 +187,10 @@ export const updatePassword = catchAsync(
     }
 
     if (
-      !(await user!.correctPassword(
-        req.body.passwordCurrent,
-        user!.password
-      ))
+      !(await user!.correctPassword(req.body.passwordCurrent, user!.password))
     ) {
       return next(new AppError("Current password is not correct", 401));
-    } else if (
-      await user!.correctPassword(req.body.password, user!.password)
-    ) {
+    } else if (await user!.correctPassword(req.body.password, user!.password)) {
       return next(
         new AppError(
           "Previous passwords cannot be the same with your new password.",
@@ -219,12 +225,11 @@ export const forgotPassword = catchAsync(
       return next(new AppError("There is no user with that email", 401));
     }
 
-    console.log(user)
-
+    console.log(user);
 
     // If the user exists create a resetToken
     const resetToken = user.createPasswordResetToken();
-    console.log(resetToken)
+    console.log(resetToken);
     await user.save({ validateBeforeSave: false });
 
     ///Send the token as an email
@@ -232,14 +237,14 @@ export const forgotPassword = catchAsync(
       const resetURL = `${req.protocol}://${req.get(
         "host"
       )}/api/v1/users/resetPassword/${resetToken}`;
-      console.log(resetURL)
+      console.log(resetURL);
       await new Email(user, resetURL).sendPasswordReset();
       res.status(200).json({
         status: "success",
         message: "Token sent to email",
       });
     } catch (err) {
-      console.log(err)
+      console.log(err);
       user.passwordResetToken = "";
       user.passwordResetExpires = "";
       await user.save({ validateBeforeSave: false });
