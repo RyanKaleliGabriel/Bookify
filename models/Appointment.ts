@@ -5,8 +5,8 @@ import AppError from "../utils/appError";
 import { getAppointment } from "../controllers/appointmentController";
 
 export interface AppointmentDocument extends Document {
-  start_time: string;
-  end_time: string;
+  start_time: number;
+  end_time: number;
   date: string;
   hours: number;
   minutes: number;
@@ -20,11 +20,11 @@ export interface AppointmentDocument extends Document {
 
 const appointmentSchema = new Schema<AppointmentDocument>({
   start_time: {
-    type: String,
+    type: Number,
     required: [true, "Start time is required"],
   },
   end_time: {
-    type: String,
+    type: Number,
     required: [true, "End time is required"],
   },
   date: {
@@ -92,39 +92,38 @@ const appointmentSchema = new Schema<AppointmentDocument>({
 //   return { hours, remainingMinutes };
 // };
 
-appointmentSchema.pre("save", async function (next) {
-  // Parse the start and end time as Date objects
-  const start = new Date(`${this.date}, ${this.start_time}`);
-  const end = new Date(`${this.date}, ${this.end_time}`);
+// appointmentSchema.pre("save", async function (next) {
+//   // Parse the start and end time as Date objects
+//   const start = new Date(`${this.date}, ${this.start_time}`);
+//   const end = new Date(`${this.date}, ${this.end_time}`);
 
-  // Calculate the difference in milliseconds
-  const diff = end.getTime() - start.getTime();
+//   // Calculate the difference in milliseconds
+//   const diff = end.getTime() - start.getTime();
 
-  //Convert milliseconds to minutes
-  const minutes = Math.floor(diff / 1000 / 60);
+//   //Convert milliseconds to minutes
+//   const minutes = Math.floor(diff / 1000 / 60);
 
-  //Convert to hours and minutes
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
+//   //Convert to hours and minutes
+//   const hours = Math.floor(minutes / 60);
+//   const remainingMinutes = minutes % 60;
 
-  if (remainingMinutes < 1 && hours < 1) {
-    next(new AppError("Invalid start and end time", 401));
-  }
+//   if (remainingMinutes < 0 && hours < 0) {
+//     next(new AppError("Invalid start and end time", 401));
+//   }
 
-  this.hours = hours;
-  this.minutes = remainingMinutes;
-  next();
-});
+//   this.hours = hours;
+//   this.minutes = remainingMinutes;
+//   next();
+// });
 
 // Pre-update middleware (for findOneAndUpdate)
 appointmentSchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate() as Record<string, any>;
 
-
   // Only calculate if `start_time` or `end_time` are part of the update
-  const startTime = update.start_time
-  const endTime = update.end_time
-  const date = update.date
+  const startTime = update.start_time;
+  const endTime = update.end_time;
+  const date = update.date;
 
   if (startTime && endTime && date) {
     const start = new Date(`${date}, ${startTime}`);

@@ -10,7 +10,7 @@ export interface AttendantDocument extends Document {
   biography: string;
   ratingsAverage: number;
   ratingsQuantity: number;
-  availability: object;
+  availability: any;
   next_month: boolean;
   next_week: boolean;
   password: string;
