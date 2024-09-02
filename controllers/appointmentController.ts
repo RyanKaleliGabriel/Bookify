@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import Appointment from "../models/Appointment";
-import Attendant from "../models/Attendant";
 import APIfeatures from "../utils/apiFeatures";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
+import {
+  availability,
+  confilcting,
+  inputFormat,
+} from "../validators/appointment";
 
 //CREATE AN APPOINTMENT
 export const createAppointment = catchAsync(
@@ -15,115 +19,33 @@ export const createAppointment = catchAsync(
     const end = new Date(`${date}, ${end_time}`).getTime();
     const date_new = new Date(`${date}`).toDateString();
 
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const day = new Date(`${date}`).getDay();
+    const result = inputFormat(end, start, next);
+    let hours: number | undefined;
+    let minutes: number | undefined;
+    if (result) {
+      hours = result.hours;
+      minutes = result.remainingMinutes;
+    }
+    await availability(attendant, date, next, start_time, end_time);
+    await confilcting(attendant, date_new, end, start, next);
 
-    //Retrieve the attendant
-    const bookingAttendant = await Attendant.findOne({
-      _id: attendant,
+    const newAppointment = await Appointment.create({
+      start_time,
+      end_time,
+      date: date_new,
+      reason,
+      attendant,
+      client,
+      hours,
+      minutes,
     });
 
-    //check if the time and day falls in between the availability dates
-
-    // Day
-    const availability = bookingAttendant?.availability;
-    // if (!availability) {
-    //   return next(new AppError("Attendant has not set a schedule", 404));
-    // }
-    // const appointment_days = availability.map(
-    //   (avail: any) => avail.day_of_week
-    // );
-    // if (!appointment_days.includes(day)) {
-    //   return next(new AppError("Attendent will not be free", 401));
-    // }
-
-    // Time
-    const start_before = new Date(`1970/01/01, ${start_time}`).getTime();
-    const end_after = new Date(`1970/01/01, ${end_time}`).getTime();
-    const appointmentStartTime = availability.map((avail: any) =>
-      new Date(`1970/01/01, ${avail.start_time}`).getTime()
-    );
-
-    const appointmentEndTime = availability.map((avail: any) =>
-      new Date(`1970/01/01, ${avail.end_time}`).getTime()
-    );
-
-    const bookedBefore = appointmentStartTime.filter(
-      (time: any) => time < start_before
-    );
-    if (bookedBefore && bookedBefore.length > 0) {
-      return new AppError("Meeting time has not started", 401);
-    }
-
-    const bookedAfter = appointmentEndTime.filter(
-      (time: any) => time < end_after
-    );
-    if (bookedAfter && bookedAfter.length > 0) {
-      return next(new AppError("Meeting time will have ended", 401));
-    }
-
-    // // Calculate the difference in milliseconds
-    // const diff = end - start;
-
-    // //Convert milliseconds to minutes
-    // const minutes = Math.floor(diff / 1000 / 60);
-
-    // //Convert to hours and minutes
-    // const hours = Math.floor(minutes / 60);
-    // const remainingMinutes = minutes % 60;
-
-    // if (remainingMinutes < 0 && hours < 0) {
-    //   next(new AppError("Invalid start and end time", 401));
-    // }
-
-    // if (end <= start) {
-    //   return next(new AppError("Invalid date or time", 401));
-    // }
-
-    // //Check for overlapping appointments for the same attendant on the same day
-    // const confilctingAppointment = await Appointment.findOne({
-    //   attendant,
-    //   date: date_new,
-    //   $or: [
-    //     { start_time: { $lt: end, $gte: start } }, // Starts within the new appointment time
-    //     { end_time: { $gt: start, $lte: end } }, // Ends within the new appointment time
-    //     {
-    //       start_time: { $lte: start },
-    //       end_time: { $gte: end },
-    //     }, // Encloses the new appointment
-    //   ],
-    // });
-
-    // if (confilctingAppointment) {
-    //   console.log(confilctingAppointment);
-    //   return next(new AppError("Time slot is already booked", 401));
-    // }
-
-    // const newAppointment = await Appointment.create({
-    //   start_time: start,
-    //   end_time: end,
-    //   date: date_new,
-    //   reason,
-    //   attendant,
-    //   client,
-    //   hours,
-    //   minutes,
-    // });
-
-    // return res.status(201).json({
-    //   status: "success",
-    //   data: {
-    //     data: newAppointment,
-    //   },
-    // });
+    return res.status(201).json({
+      status: "success",
+      data: {
+        data: newAppointment,
+      },
+    });
   }
 );
 
@@ -186,43 +108,16 @@ export const updateAppointment = catchAsync(
       ).getTime();
       const end = new Date(`${req.body.date}, ${req.body.end_time}`).getTime();
       const date_new = new Date(`${req.body.date}`).toDateString();
+      const attendant = req.body.attendant
 
-      // Calculate the difference in milliseconds
-      const diff = end - start;
-
-      //Convert milliseconds to minutes
-      const minutes = Math.floor(diff / 1000 / 60);
-
-      //Convert to hours and minutes
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = minutes % 60;
-
-      if (remainingMinutes < 0 && hours < 0) {
-        next(new AppError("Invalid start and end time", 401));
+      const result = inputFormat(end, start, next);
+      if (result) {
+        req.body.hours = result.hours;
+        req.body.minutes = result.remainingMinutes;
       }
+      await availability(attendant, req.body.date, next, req.body.start_time, req.body.end_time);
+      await confilcting(attendant, date_new, end, start, next);
 
-      if (end <= start) {
-        return next(new AppError("Invalid date or time", 401));
-      }
-
-      //Check for overlapping appointments for the same attendant on the same day
-      const confilctingAppointment = await Appointment.findOne({
-        attendant: req.body.attendant,
-        date: date_new,
-        $or: [
-          { start_time: { $lt: end, $gte: start } }, // Starts within the new appointment time
-          { end_time: { $gt: start, $lte: end } }, // Ends within the new appointment time
-          {
-            start_time: { $lte: start },
-            end_time: { $gte: end },
-          }, // Encloses the new appointment
-        ],
-      });
-
-      if (confilctingAppointment) {
-        console.log(confilctingAppointment);
-        return next(new AppError("Time slot is already booked", 401));
-      }
     }
 
     const updatedAppointment = await Appointment.findByIdAndUpdate(
