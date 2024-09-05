@@ -8,7 +8,6 @@ export interface AttendantDocument extends Document {
   email: string;
   image_url: string;
   biography: string;
-
   availability: any;
   next_month: boolean;
   next_week: boolean;
