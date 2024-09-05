@@ -1,23 +1,31 @@
-import { NextFunction } from "express";
-import Attendant, { AttendantDocument } from "../models/Attendant";
-import AppError from "../utils/appError";
+
 import Appointment from "../models/Appointment";
+import Attendant, { AttendantDocument } from "../models/Attendant";
+
+type Error = {
+  message: string;
+  code: number;
+};
 
 export const availability = async (
   attendant: AttendantDocument,
   date: string,
-  next: NextFunction,
+
   start_time: string,
   end_time: string
 ) => {
+  const errorsAvail: { message: string; code: number }[] = [];
   //Retrieve the attendant
   const bookingAttendant = await Attendant.findOne({
     _id: attendant,
   });
 
   const availability = bookingAttendant?.availability;
-  if (!availability) {
-    return next(new AppError("Attendant has not set a schedule", 404));
+  if (availability.length === 0) {
+    errorsAvail.push({
+      message: "Attendant has not set a schedule",
+      code: 404,
+    });
   }
 
   //check if the time and day falls in between the availability dates
@@ -39,13 +47,14 @@ export const availability = async (
   );
 
   if (dayAvailability.length === 0) {
-    return next(
-      new AppError(`Attendant will not be available on ${dayOfWeek}`, 401)
-    );
+    errorsAvail.push({
+      message: `Attendant will not be available on ${dayOfWeek}`,
+      code: 401,
+    });
   }
 
   //Convert start abd ebd times to timestamps  for comparison
-  const appointmentStart = new Date(`${date}, ${start_time}`).getTime(); 
+  const appointmentStart = new Date(`${date}, ${start_time}`).getTime();
   const appointmentEnd = new Date(`${date}, ${end_time}`).getTime(); //
 
   //Convert attenadnts's available start and end times to timestamps
@@ -55,21 +64,19 @@ export const availability = async (
       `${date}, ${avail.start_time}`
     ).getTime();
     const availabilityEnd = new Date(`${date}, ${avail.end_time}`).getTime();
-    console.log(appointmentStart, availabilityStart)
-    console.log(appointmentEnd, availabilityEnd)
-
     return (
       appointmentStart >= availabilityStart && appointmentEnd <= availabilityEnd
     );
   });
   if (!isValidTime) {
-    return next(
-      new AppError(
+    errorsAvail.push({
+      message:
         "Appointment time does not fit within this attendant's schedule ",
-        401
-      )
-    );
+      code: 401,
+    });
   }
+
+  return errorsAvail;
 };
 
 export const confilcting = async (
@@ -77,33 +84,39 @@ export const confilcting = async (
   date_new: any,
   end: any,
   start: any,
-  next: NextFunction
+
 ) => {
+  const errorsConflict: { message: string; code: number }[] = [];
   //Check for overlapping appointments for the same attendant on the same day
   const confilctingAppointment = await Appointment.findOne({
     attendant,
     date: date_new,
     $or: [
-      { start_time: { $lt: end, $gte: start } }, // Starts within the new appointment time
-      { end_time: { $gt: start, $lte: end } }, // Ends within the new appointment time
+      { startms: { $lt: end, $gte: start } }, // Starts within the new appointment time
+      { endms: { $gt: start, $lte: end } }, // Ends within the new appointment time
       {
-        start_time: { $lte: start },
-        end_time: { $gte: end },
+        startms: { $lte: start },
+        endms: { $gte: end },
       }, // Encloses the new appointment
     ],
-  });
+  }).select('+startms +endms');
 
   if (confilctingAppointment) {
-    console.log(confilctingAppointment);
-    return next(new AppError("Time slot is already booked", 401));
+    errorsConflict.push({
+      message: "Time slot is already booked",
+      code: 401,
+    });
   }
+
+  return errorsConflict;
 };
 
 export const inputFormat = (
   end: any,
   start: any,
-  next: NextFunction
-): { hours: number; remainingMinutes: number } | void => {
+
+): { hours: number; remainingMinutes: number; errorsInput: Error[] } => {
+  const errorsInput: Error[] = [];
   // Calculate the difference in milliseconds
   const diff = end - start;
 
@@ -114,12 +127,32 @@ export const inputFormat = (
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
-  if (remainingMinutes < 0 && hours < 0) {
-    next(new AppError("Invalid start and end time", 401));
+  if (end <= start) {
+    errorsInput.push({
+      message: "Invalid date or time",
+      code: 401,
+    });
   }
 
-  if (end <= start) {
-    return next(new AppError("Invalid date or time", 401));
+  //Check if time is past today
+  const today = new Date().getTime();
+  if (start < today) {
+    errorsInput.push({
+      message: "Appointments are only made past the current date and time",
+      code: 401,
+    });
   }
-  return { hours, remainingMinutes };
+
+  return { hours, remainingMinutes, errorsInput };
+};
+
+export const timeValidity = (availability: any) => {
+  const availNumber = availability.length;
+  const validAvailability = availability.filter((avail: any) => {
+    const start = new Date(`1970-01-01, ${avail.start_time}`).getTime();
+    const end = new Date(`1970-01-01, ${avail.end_time}`).getTime();
+    return start < end;
+  });
+
+  return validAvailability.length === availNumber;
 };

@@ -19,25 +19,39 @@ export const createAppointment = catchAsync(
     const end = new Date(`${date}, ${end_time}`).getTime();
     const date_new = new Date(`${date}`).toDateString();
 
-    const result = inputFormat(end, start, next);
-    let hours: number | undefined;
-    let minutes: number | undefined;
-    if (result) {
-      hours = result.hours;
-      minutes = result.remainingMinutes;
+    const { hours, remainingMinutes, errorsInput } = inputFormat(end, start);
+    if (errorsInput.length > 0 && errorsInput) {
+      return next(new AppError(errorsInput[0].message, errorsInput[0].code));
     }
-    await availability(attendant, date, next, start_time, end_time);
-    await confilcting(attendant, date_new, end, start, next);
+
+    const errorsAvail = await availability(
+      attendant,
+      date,
+      start_time,
+      end_time
+    );
+
+    if (errorsAvail.length > 0 && errorsAvail) {
+      return next(new AppError(errorsAvail[0].message, errorsAvail[0].code));
+    }
+    const errorsConflict = await confilcting(attendant, date_new, end, start);
+    if (errorsConflict.length > 0 && errorsConflict) {
+      return next(
+        new AppError(errorsConflict[0].message, errorsConflict[0].code)
+      );
+    }
 
     const newAppointment = await Appointment.create({
       start_time,
       end_time,
+      startms: start,
+      endms: end,
       date: date_new,
       reason,
       attendant,
       client,
       hours,
-      minutes,
+      minutes: remainingMinutes,
     });
 
     return res.status(201).json({
@@ -64,7 +78,6 @@ export const getAppointment = catchAsync(
         data: appointment,
       },
     });
-    next();
   }
 );
 
@@ -108,16 +121,34 @@ export const updateAppointment = catchAsync(
       ).getTime();
       const end = new Date(`${req.body.date}, ${req.body.end_time}`).getTime();
       const date_new = new Date(`${req.body.date}`).toDateString();
-      const attendant = req.body.attendant
+      const attendant = req.body.attendant;
 
-      const result = inputFormat(end, start, next);
+      const result = inputFormat(end, start);
       if (result) {
         req.body.hours = result.hours;
         req.body.minutes = result.remainingMinutes;
       }
-      await availability(attendant, req.body.date, next, req.body.start_time, req.body.end_time);
-      await confilcting(attendant, date_new, end, start, next);
+      if (result.errorsInput.length > 0 && result.errorsInput) {
+        const errors = result.errorsInput;
+        return next(new AppError(errors[0].message, errors[0].code));
+      }
 
+      const errorsAvail = await availability(
+        attendant,
+        req.body.date,
+        req.body.start_time,
+        req.body.end_time
+      );
+
+      if (errorsAvail.length > 0 && errorsAvail) {
+        return next(new AppError(errorsAvail[0].message, errorsAvail[0].code));
+      }
+      const errorsConflict = await confilcting(attendant, date_new, end, start);
+      if (errorsConflict.length > 0 && errorsConflict) {
+        return next(
+          new AppError(errorsConflict[0].message, errorsConflict[0].code)
+        );
+      }
     }
 
     const updatedAppointment = await Appointment.findByIdAndUpdate(

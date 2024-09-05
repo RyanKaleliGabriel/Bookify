@@ -1,12 +1,12 @@
 import mongoose, { Schema, Document, model } from "mongoose";
 import Client from "./Client";
 import Attendant from "./Attendant";
-import AppError from "../utils/appError";
-import { getAppointment } from "../controllers/appointmentController";
 
 export interface AppointmentDocument extends Document {
   start_time: string;
   end_time: string;
+  startms: number;
+  endms: number;
   date: string;
   hours: number;
   minutes: number;
@@ -26,6 +26,16 @@ const appointmentSchema = new Schema<AppointmentDocument>({
   end_time: {
     type: String,
     required: [true, "End time is required"],
+  },
+  startms: {
+    type: Number,
+    required: [true, "Start time is required"],
+    select: false,
+  },
+  endms: {
+    type: Number,
+    required: [true, "End time is required"],
+    select: false,
   },
   date: {
     type: String,
@@ -66,8 +76,6 @@ const appointmentSchema = new Schema<AppointmentDocument>({
     required: [true, "An appointment must have a client"],
   },
 });
-
-
 
 const Appointment = model<AppointmentDocument>(
   "Appointment",
