@@ -3,6 +3,7 @@ import Attendant from "../models/Attendant";
 import Client from "../models/Client";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
+import { timeValidity } from "../validators/appointment";
 
 export const getMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -30,20 +31,28 @@ export const getMe = catchAsync(
 // Update Handler
 export const updateMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const attendant = await Attendant.findByIdAndUpdate(req.user.id, req.body, {
-      runValidators: true,
-      new: true,
-    });
-
-    const client = await Client.findByIdAndUpdate(req.user, req.body, {
-      runValidators: true,
-      new: true,
-    });
-
-    const user = client ? client : attendant;
-
+    const attendant = await Attendant.findById(req.user.id);
+    const client = await Client.findById(req.user.id);
+    let user = client || attendant;
     if (!user) {
       return next(new AppError("No doc with that id exists", 404));
+    }
+
+    if (attendant || req.body.availability) {
+      const isValidTime = timeValidity(req.body.availability);
+
+      if (!isValidTime) {
+        return next(new AppError("Invalid start and end time", 401));
+      }
+      user = await Attendant.findByIdAndUpdate(attendant?.id, req.body, {
+        runValidators: true,
+        new: true,
+      });
+    }else if (client) {
+      user = await Client.findByIdAndUpdate(client!.id, req.body, {
+        runValidators: true,
+        new: true,
+      });
     }
 
     res.status(201).json({

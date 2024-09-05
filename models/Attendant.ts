@@ -8,9 +8,7 @@ export interface AttendantDocument extends Document {
   email: string;
   image_url: string;
   biography: string;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  availability: object;
+  availability: any;
   next_month: boolean;
   next_week: boolean;
   password: string;
@@ -46,17 +44,6 @@ const attendantSchema = new Schema<AttendantDocument>({
   biography: {
     type: String,
     // required: [true, "Biography input is required"],
-  },
-  ratingsAverage: {
-    type: Number,
-    default: 3,
-    min: [1, "Rating must be above 1.0"],
-    max: [5, "Rating must be below 5.0"],
-    set: (val: number): number => Math.round(val * 5) / 5,
-  },
-  ratingsQuantity: {
-    type: Number,
-    default: 0,
   },
   availability: [
     {
@@ -101,6 +88,7 @@ const attendantSchema = new Schema<AttendantDocument>({
     type: String,
     select:false
   },
+  
 });
 
 // passwords compare validations

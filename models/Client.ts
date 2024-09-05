@@ -60,7 +60,6 @@ const clientSchema = new Schema<ClientDocument>({
   },
   role: {
     type:String,
-    select: false,
   },
 });
 
