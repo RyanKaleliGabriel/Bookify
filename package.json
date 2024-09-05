@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node server.ts",
+    "start:prod":"set NODE_ENV=production && nodemon server.ts",
     "dev": "nodemon server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
