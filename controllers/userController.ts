@@ -38,13 +38,13 @@ export const updateMe = catchAsync(
       return next(new AppError("No doc with that id exists", 404));
     }
 
-    if (attendant && req.body.availability) {
+    if (attendant || req.body.availability) {
       const isValidTime = timeValidity(req.body.availability);
 
       if (!isValidTime) {
         return next(new AppError("Invalid start and end time", 401));
       }
-      user = await Attendant.findByIdAndUpdate(attendant.id, req.body, {
+      user = await Attendant.findByIdAndUpdate(attendant?.id, req.body, {
         runValidators: true,
         new: true,
       });
