@@ -37,7 +37,6 @@ class Email {
       url: this.url,
       subject,
     });
-    console.log("here");
 
     const mailOptions = {
       from: this.from,
@@ -55,6 +54,10 @@ class Email {
       "passwordReset",
       "Your password reset token(valid for the next 10 minutes)"
     );
+  }
+
+  async sendWelcome() {
+    await this.send("welcome", "Welcome to the bookify family");
   }
 }
 

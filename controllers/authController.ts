@@ -62,7 +62,8 @@ export const signup = catchAsync(
             password: req.body.password,
             passwordConfirm: req.body.passwordConfirm,
           });
-
+    const url = `${req.protocol}://${req.get('host')}/me`
+    await new Email(newUser, url).sendWelcome()
     createSendToken(newUser, 201, res, req);
   }
 );
@@ -116,7 +117,6 @@ export const protect = catchAsync(
       req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
-      console.log(token);
     } else if (req.cookies.jwt) {
       token = req.cookies.jwt;
     }
@@ -225,11 +225,9 @@ export const forgotPassword = catchAsync(
       return next(new AppError("There is no user with that email", 401));
     }
 
-    console.log(user);
-
     // If the user exists create a resetToken
     const resetToken = user.createPasswordResetToken();
-    console.log(resetToken);
+
     await user.save({ validateBeforeSave: false });
 
     ///Send the token as an email
@@ -237,14 +235,13 @@ export const forgotPassword = catchAsync(
       const resetURL = `${req.protocol}://${req.get(
         "host"
       )}/api/v1/users/resetPassword/${resetToken}`;
-      console.log(resetURL);
+    
       await new Email(user, resetURL).sendPasswordReset();
       res.status(200).json({
         status: "success",
         message: "Token sent to email",
       });
     } catch (err) {
-      console.log(err);
       user.passwordResetToken = "";
       user.passwordResetExpires = "";
       await user.save({ validateBeforeSave: false });
