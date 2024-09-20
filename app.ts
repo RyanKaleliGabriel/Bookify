@@ -22,14 +22,17 @@ const globalErrorController = require("./controllers/errorController");
 const app = express();
 
 //For secure cookie options
-app.enable("trust proxy");
+// app.enable("trust proxy");
 
 //Email templating
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 //Enable cors for all origins
-app.use(cors());
+app.use(cors({
+  origin:'http://localhost:5173',
+  credentials:true
+}));
 
 // Cors for non-simple requests(put, patch, delete or request that send cookies or use non standard headers),
 // The browser does an option request to see if the request is safe,
