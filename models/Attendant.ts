@@ -87,7 +87,6 @@ const attendantSchema = new Schema<AttendantDocument>({
   role: {
     type: String,
   },
-  
 });
 
 // passwords compare validations

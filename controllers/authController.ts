@@ -31,7 +31,8 @@ const createSendToken = (
         Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 100
     ),
     httpOnly: true,
-    secure: req.secure || req.header("x-forwaded-proto") === "https",
+    // secure: req.secure || req.header("x-forwaded-proto") === "https",
+    secure:false
   });
 
   //Return response
@@ -47,25 +48,25 @@ const createSendToken = (
 //Sign up handler
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const role = req.body.role;
+    const { role, name, email, password, passwordConfirm } = req.body;
     const newUser =
       role === "attendant"
         ? await Attendant.create({
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-            passwordConfirm: req.body.passwordConfirm,
+            name,
+            email,
+            password,
+            passwordConfirm,
             role,
           })
         : await Client.create({
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-            passwordConfirm: req.body.passwordConfirm,
+            name,
+            email,
+            password,
+            passwordConfirm,
             role,
           });
-    const url = `${req.protocol}://${req.get('host')}/me`
-    await new Email(newUser, url).sendWelcome()
+    const url = `${req.protocol}://${req.get("host")}/me`;
+    await new Email(newUser, url).sendWelcome();
     createSendToken(newUser, 201, res, req);
   }
 );
@@ -237,7 +238,7 @@ export const forgotPassword = catchAsync(
       const resetURL = `${req.protocol}://${req.get(
         "host"
       )}/api/v1/users/resetPassword/${resetToken}`;
-    
+
       await new Email(user, resetURL).sendPasswordReset();
       res.status(200).json({
         status: "success",
