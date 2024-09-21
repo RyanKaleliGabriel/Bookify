@@ -86,7 +86,6 @@ const attendantSchema = new Schema<AttendantDocument>({
   },
   role: {
     type: String,
-    select:false
   },
   
 });

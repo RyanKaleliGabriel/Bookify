@@ -55,12 +55,14 @@ export const signup = catchAsync(
             email: req.body.email,
             password: req.body.password,
             passwordConfirm: req.body.passwordConfirm,
+            role,
           })
         : await Client.create({
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
             passwordConfirm: req.body.passwordConfirm,
+            role,
           });
     const url = `${req.protocol}://${req.get('host')}/me`
     await new Email(newUser, url).sendWelcome()
