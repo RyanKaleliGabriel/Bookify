@@ -18,6 +18,7 @@ export interface AttendantDocument extends Document {
   passwordChangedAt: any;
   passwordResetToken: string;
   passwordResetExpires: any;
+  profession:string
   role: string;
   correctPassword(
     candidatePassword: string,
@@ -44,6 +45,9 @@ const attendantSchema = new Schema<AttendantDocument>({
   biography: {
     type: String,
     // required: [true, "Biography input is required"],
+  },
+  profession:{
+    type:String
   },
   availability: [
     {
