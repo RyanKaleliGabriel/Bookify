@@ -33,10 +33,7 @@ export const updateMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const attendant = await Attendant.findById(req.user.id);
     const client = await Client.findById(req.user.id);
-    console.log(req.body)
     let user = client || attendant;
-
-    console.log(attendant)
     if (!user) {
       return next(new AppError("No doc with that id exists", 404));
     }
@@ -51,8 +48,13 @@ export const updateMe = catchAsync(
         runValidators: true,
         new: true,
       });
-    }else if (client) {
+    } else if (client) {
       user = await Client.findByIdAndUpdate(client!.id, req.body, {
+        runValidators: true,
+        new: true,
+      });
+    } else {
+      user = await Attendant.findByIdAndUpdate(attendant?.id, req.body, {
         runValidators: true,
         new: true,
       });
