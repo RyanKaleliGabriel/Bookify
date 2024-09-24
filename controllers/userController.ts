@@ -33,12 +33,15 @@ export const updateMe = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const attendant = await Attendant.findById(req.user.id);
     const client = await Client.findById(req.user.id);
+    console.log(req.body)
     let user = client || attendant;
+
+    console.log(attendant)
     if (!user) {
       return next(new AppError("No doc with that id exists", 404));
     }
 
-    if (attendant || req.body.availability) {
+    if (req.body.availability) {
       const isValidTime = timeValidity(req.body.availability);
 
       if (!isValidTime) {
