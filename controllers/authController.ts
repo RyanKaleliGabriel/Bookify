@@ -235,9 +235,7 @@ export const forgotPassword = catchAsync(
 
     ///Send the token as an email
     try {
-      const resetURL = `${req.protocol}://${req.get(
-        "host"
-      )}/http://localhost:5173/${resetToken}`;
+      const resetURL = `http://localhost:5173/${resetToken}`;
 
       await new Email(user, resetURL).sendPasswordReset();
       res.status(200).json({
