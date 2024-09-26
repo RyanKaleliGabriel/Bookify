@@ -8,7 +8,12 @@ import {
   signup,
   updatePassword,
 } from "../controllers/authController";
-import { deleteMe, getMe, updateMe } from "../controllers/userController";
+import {
+  deleteMe,
+  getMe,
+  getUser,
+  updateMe,
+} from "../controllers/userController";
 
 //Initialise express router
 const router = express.Router();
@@ -20,14 +25,14 @@ router.post("/login", login);
 router.get("/logout", logout);
 
 router.post("/forgotPassword", forgotPassword);
-router.patch("/resetPassword/:token", resetPassword)
+router.patch("/resetPassword/:token", resetPassword);
 
 router.use(protect);
 router.patch("/updatePassword", updatePassword);
+router.get("/getUser", getUser);
 
-
-router.get("/getMe", getMe)
-router.delete("/deleteMe", deleteMe)
-router.patch("/updateMe", updateMe)
+router.get("/getMe", getMe);
+router.delete("/deleteMe", deleteMe);
+router.patch("/updateMe", updateMe);
 
 export default router;

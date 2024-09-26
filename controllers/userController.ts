@@ -86,3 +86,26 @@ export const deleteMe = catchAsync(
     });
   }
 );
+
+export const getUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // Find user based on ID
+    const attendant = await Attendant.findById(req.params.id);
+    const client = await Client.findById(req.params.id);
+    // Determine user role
+    const user = client || attendant;
+
+    //Check if user exists
+    if (!user) {
+      return next(new AppError("No document found with that id", 404));
+    }
+
+    //Return response
+    res.status(200).json({
+      status: "success",
+      data: {
+        data: user,
+      },
+    });
+  }
+);
