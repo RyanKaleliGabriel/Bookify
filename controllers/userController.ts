@@ -90,8 +90,8 @@ export const deleteMe = catchAsync(
 export const getUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     // Find user based on ID
-    const attendant = await Attendant.findById(req.params.id);
-    const client = await Client.findById(req.params.id);
+    const attendant = await Attendant.findOne({ email: req.params.email });
+    const client = await Client.findOne({ email: req.params.email });
     // Determine user role
     const user = client || attendant;
 
