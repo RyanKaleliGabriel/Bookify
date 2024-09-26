@@ -86,7 +86,7 @@ const attendantSchema = new Schema<AttendantDocument>({
   active: {
     type: Boolean,
     default: true,
-    select: false,
+
   },
   role: {
     type: String,
