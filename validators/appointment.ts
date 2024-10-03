@@ -10,7 +10,6 @@ type Error = {
 export const availability = async (
   attendant: AttendantDocument,
   date: string,
-
   start_time: string,
   end_time: string
 ) => {
@@ -56,6 +55,7 @@ export const availability = async (
   //Convert start abd ebd times to timestamps  for comparison
   const appointmentStart = new Date(`${date}, ${start_time}`).getTime();
   const appointmentEnd = new Date(`${date}, ${end_time}`).getTime(); //
+
 
   //Convert attenadnts's available start and end times to timestamps
   //7pm //8pm
