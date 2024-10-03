@@ -30,6 +30,7 @@ router.patch("/resetPassword/:token", resetPassword);
 router.use(protect);
 router.patch("/updatePassword", updatePassword);
 router.get("/getUser/:email", getUser);
+router.get("/getUser/:id", getUser);
 
 router.get("/getMe", getMe);
 router.delete("/deleteMe", deleteMe);
