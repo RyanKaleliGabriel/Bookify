@@ -12,6 +12,7 @@ import {
   deleteMe,
   getMe,
   getUser,
+  getUserById,
   updateMe,
 } from "../controllers/userController";
 
@@ -30,7 +31,7 @@ router.patch("/resetPassword/:token", resetPassword);
 router.use(protect);
 router.patch("/updatePassword", updatePassword);
 router.get("/getUser/:email", getUser);
-router.get("/getUserById/:id", getUser);
+router.get("/getUserById/:id", getUserById);
 
 router.get("/getMe", getMe);
 router.delete("/deleteMe", deleteMe);
