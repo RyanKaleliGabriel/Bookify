@@ -53,9 +53,9 @@ const appointmentSchema = new Schema<AppointmentDocument>({
   },
   status: {
     type: String,
-    enum: ["approved", "rejected", "postponed", "on-going", "pending"],
+    enum: ["Approved", "Declined", "Pending"],
     required: [true, "Appointment status is required"],
-    default: "pending",
+    default: "Pending",
   },
   created_at: {
     type: Date,
