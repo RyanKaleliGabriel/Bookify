@@ -6,6 +6,7 @@ import catchAsync from "../utils/catchAsync";
 import {
   availability,
   confilcting,
+  confilctingUpdate,
   inputFormat,
 } from "../validators/appointment";
 
@@ -143,7 +144,8 @@ export const updateAppointment = catchAsync(
       if (errorsAvail.length > 0 && errorsAvail) {
         return next(new AppError(errorsAvail[0].message, errorsAvail[0].code));
       }
-      const errorsConflict = await confilcting(attendant, date_new, end, start);
+
+      const errorsConflict = await confilctingUpdate(attendant, date_new, end, start, req.params.id);
       if (errorsConflict.length > 0 && errorsConflict) {
         return next(
           new AppError(errorsConflict[0].message, errorsConflict[0].code)

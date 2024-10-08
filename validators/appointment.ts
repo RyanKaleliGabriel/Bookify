@@ -1,4 +1,3 @@
-
 import Appointment from "../models/Appointment";
 import Attendant, { AttendantDocument } from "../models/Attendant";
 
@@ -56,7 +55,6 @@ export const availability = async (
   const appointmentStart = new Date(`${date}, ${start_time}`).getTime();
   const appointmentEnd = new Date(`${date}, ${end_time}`).getTime(); //
 
-
   //Convert attenadnts's available start and end times to timestamps
   //7pm //8pm
   const isValidTime = dayAvailability.some((avail: any) => {
@@ -83,8 +81,7 @@ export const confilcting = async (
   attendant: AttendantDocument,
   date_new: any,
   end: any,
-  start: any,
-
+  start: any
 ) => {
   const errorsConflict: { message: string; code: number }[] = [];
   //Check for overlapping appointments for the same attendant on the same day
@@ -99,7 +96,42 @@ export const confilcting = async (
         endms: { $gte: end },
       }, // Encloses the new appointment
     ],
-  }).select('+startms +endms');
+  }).select("+startms +endms");
+
+  if (confilctingAppointment) {
+    errorsConflict.push({
+      message: "Time slot is already booked",
+      code: 401,
+    });
+  }
+
+  return errorsConflict;
+};
+
+export const confilctingUpdate = async (
+  attendant: AttendantDocument,
+  date_new: any,
+  end: any,
+  start: any,
+  id: string
+) => {
+  const errorsConflict: { message: string; code: number }[] = [];
+  //Check for overlapping appointments for the same attendant on the same day
+  const confilctingAppointment = await Appointment.findOne(
+    { _id: { $ne: id } },
+    {
+      attendant,
+      date: date_new,
+      $or: [
+        { startms: { $lt: end, $gte: start } }, // Starts within the new appointment time
+        { endms: { $gt: start, $lte: end } }, // Ends within the new appointment time
+        {
+          startms: { $lte: start },
+          endms: { $gte: end },
+        }, // Encloses the new appointment
+      ],
+    }
+  ).select("+startms +endms");
 
   if (confilctingAppointment) {
     errorsConflict.push({
@@ -113,8 +145,7 @@ export const confilcting = async (
 
 export const inputFormat = (
   end: any,
-  start: any,
-
+  start: any
 ): { hours: number; remainingMinutes: number; errorsInput: Error[] } => {
   const errorsInput: Error[] = [];
   // Calculate the difference in milliseconds
