@@ -69,7 +69,7 @@ export const availability = async (
   if (!isValidTime) {
     errorsAvail.push({
       message:
-        "Appointment time does not fit within this attendant's schedule ",
+        "Appointment time does not fit within this attendant's schedule.",
       code: 401,
     });
   }
