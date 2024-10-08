@@ -118,8 +118,8 @@ export const confilctingUpdate = async (
   const errorsConflict: { message: string; code: number }[] = [];
   //Check for overlapping appointments for the same attendant on the same day
   const confilctingAppointment = await Appointment.findOne(
-    { _id: { $ne: id } },
     {
+      _id: {$ne: id},
       attendant,
       date: date_new,
       $or: [
