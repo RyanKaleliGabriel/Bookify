@@ -10,8 +10,9 @@ import { protect, restrictTo } from "../controllers/authController";
 
 const router = express.Router();
 
-router.use(protect);
 
+
+router.use(protect);
 router.get("/getAppointments", getAppointments);
 router.get("/getAppointments/:id", getAppointment);
 router.post("/createAppointment", restrictTo("client"), createAppointment);

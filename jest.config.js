@@ -1,5 +1,9 @@
-module.exports ={
-    preset:"ts-jest",
-    testEnvirnoment:'node',
-    testMatch:['**/*.test.ts']
-}
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "node",
+  moduleFileExtensions: ["ts", "js"],
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
+  },
+  testMatch: ["**/test/**/*.test.(ts|js)"],
+};
