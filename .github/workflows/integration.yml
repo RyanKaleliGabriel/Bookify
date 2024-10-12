@@ -32,7 +32,7 @@ jobs:
 
     - name: Run tests
       env: 
-        DATABASE : ${{ secrets.TEST_DB }}
+        TEST_DB : ${{ secrets.TEST_DB }}
 
       run: npm test
 
