@@ -13,6 +13,9 @@ COPY . .
 #Build the application
 RUN npm run build
 
+#TEST the build application
+RUN npm test
+
 #Stage 2: Production
 FROM node:18-alpine
 
