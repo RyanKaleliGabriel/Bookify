@@ -32,6 +32,9 @@ jobs:
 
     - name: Run tests
       run: npm test
+      env: 
+        DATABASE : ${{ secrets.DATABASE }}
+        DATABASE_PASSWORD: ${{ secrets.DATABSE_PASSWORD }}
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
