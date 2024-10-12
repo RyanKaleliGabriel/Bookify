@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import request from "supertest";
@@ -6,6 +6,8 @@ import app from "../app";
 import Client, { ClientDocument } from "../models/Client";
 
 dotenv.config({ path: "../config.env" });
+const TIME_IN_SECONDS = 10 * 1000;
+jest.setTimeout(TIME_IN_SECONDS);
 
 let user = {
   name: "Demo user",
@@ -16,11 +18,7 @@ let user = {
 };
 
 beforeAll(async () => {
-  const DB = process.env.DATABASE!.replace(
-    "<PASSWORD>",
-    process.env.DATABASE_PASSWORD!
-  );
-
+  const DB = process.env.TEST_DB!;
   try {
     await mongoose.connect(DB);
     console.log("Connected to database for authentiaction tests");
@@ -56,7 +54,6 @@ describe("Login Service", () => {
       .send({ email: user.email, password: user.password })
       .expect(200);
 
-    console.log(res.body);
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toMatch(/success/);
     expect(res.body).toHaveProperty("token");

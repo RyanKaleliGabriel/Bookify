@@ -8,8 +8,7 @@
     "start": "node dist/server.js",
     "start:prod": "cross-env NODE_ENV=production && node dist/server.js",
     "dev": "nodemon server.ts",
-    "test": "jest"
-
+    "test": "jest --detectOpenHandles"
   },
   "author": "Ryan Kaleli Gabriel",
   "license": "ISC",
