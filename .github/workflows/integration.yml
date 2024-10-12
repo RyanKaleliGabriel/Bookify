@@ -32,8 +32,8 @@ jobs:
 
     - name: Run tests
       env: 
-        DATABASE : ${{ secrets.DATABASE }}
-        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE : ${{ secrets.TEST_DB }}
+
       run: npm test
 
     - name: Set up QEMU
