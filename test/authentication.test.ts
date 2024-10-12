@@ -7,6 +7,14 @@ import Client, { ClientDocument } from "../models/Client";
 
 dotenv.config({ path: "../config.env" });
 
+let user = {
+  name: "Demo user",
+  email: "demo@gmail.com",
+  password: "pass1234",
+  passwordConfirm: "pass1234",
+  role: "client",
+};
+
 beforeAll(async () => {
   const DB = process.env.DATABASE!.replace(
     "<PASSWORD>",
@@ -23,21 +31,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await Client.deleteOne({ _id: createdUser._id });
+  await Client.deleteOne({ email: user.email });
   console.log("Tested user deleted successfully");
   await mongoose.connection.close();
   console.log("Database connection closed ");
 });
-
-let createdUser: ClientDocument;
-
-let user = {
-  name: "Demo user",
-  email: "demo@gmail.com",
-  password: "pass1234",
-  passwordConfirm: "pass1234",
-  role: "client",
-};
 
 describe("Sign up service", () => {
   it("should create a new user", async () => {
@@ -46,7 +44,6 @@ describe("Sign up service", () => {
       .send(user)
       .expect(201);
 
-    createdUser = res.body.data.user;
     expect(res.statusCode).toBe(201);
     expect(res.body.status).toMatch(/success/);
   });
@@ -56,7 +53,7 @@ describe("Login Service", () => {
   it("should login and authenticate a user", async () => {
     const res = await request(app)
       .post("/api/v1/users/login")
-      .send({ email: createdUser.email, password: "pass1234" })
+      .send({ email: user.email, password: user.password })
       .expect(200);
 
     console.log(res.body);
