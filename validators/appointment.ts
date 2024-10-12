@@ -47,7 +47,7 @@ export const availability = async (
   if (dayAvailability.length === 0) {
     errorsAvail.push({
       message: `Attendant will not be available on ${dayOfWeek}`,
-      code: 401,
+      code: 400,
     });
   }
 
@@ -70,7 +70,7 @@ export const availability = async (
     errorsAvail.push({
       message:
         "Appointment time does not fit within this attendant's schedule.",
-      code: 401,
+      code: 400,
     });
   }
 
@@ -101,7 +101,7 @@ export const confilcting = async (
   if (confilctingAppointment) {
     errorsConflict.push({
       message: "Time slot is already booked",
-      code: 401,
+      code: 400,
     });
   }
 
@@ -136,7 +136,7 @@ export const confilctingUpdate = async (
   if (confilctingAppointment) {
     errorsConflict.push({
       message: "Time slot is already booked",
-      code: 401,
+      code: 400,
     });
   }
 
@@ -161,7 +161,7 @@ export const inputFormat = (
   if (end <= start) {
     errorsInput.push({
       message: "Invalid date or time",
-      code: 401,
+      code: 400,
     });
   }
 
@@ -170,7 +170,7 @@ export const inputFormat = (
   if (start < today) {
     errorsInput.push({
       message: "Appointments are only made past the current date and time",
-      code: 401,
+      code: 400,
     });
   }
 

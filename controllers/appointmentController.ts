@@ -162,7 +162,7 @@ export const updateAppointment = catchAsync(
       }
     );
 
-    return res.status(200).json({
+    return res.status(201).json({
       status: "success",
       data: {
         data: updatedAppointment,

@@ -9,7 +9,7 @@
     "start:prod": "cross-env NODE_ENV=production && node dist/server.js",
     "dev": "nodemon server.ts",
     "test": "jest",
-    "prepare":"husky install"
+    "prepare": "husky install"
   },
   "author": "Ryan Kaleli Gabriel",
   "license": "ISC",
@@ -32,10 +32,12 @@
     "nodemon": "^3.1.4",
     "pug": "^3.0.3",
     "slugify": "^1.6.6",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.7",
@@ -49,6 +51,7 @@
     "@types/node": "^22.5.0",
     "@types/nodemailer": "^6.4.15",
     "@types/pug": "^2.0.10",
+    "@types/supertest": "^6.0.2",
     "@types/validator": "^13.12.1",
     "cross-env": "^7.0.3",
     "husky": "^9.1.6",
