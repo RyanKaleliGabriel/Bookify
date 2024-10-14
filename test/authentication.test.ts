@@ -26,14 +26,14 @@ beforeAll(async () => {
     console.error("Database connection error", error);
     throw error;
   }
-});
+}, 30000);
 
 afterAll(async () => {
   await Client.deleteOne({ email: user.email });
   console.log("Tested user deleted successfully");
   await mongoose.connection.close();
   console.log("Database connection closed ");
-});
+}, 30000);
 
 describe("Sign up service", () => {
   it("should create a new user", async () => {
