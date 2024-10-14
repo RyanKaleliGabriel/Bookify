@@ -93,18 +93,20 @@ const updateValidData = {
 //   });
 // });
 
-// describe("GET /api/v1/appointments/", () => {
-//   it("should return all appointments", async () => {
-//     const response = await request(app)
-//       .get("/api/v1/appointments/getAppointments")
-//       .set("Authorization", `Bearer ${token}`)
-//       .expect("Content-Type", /json/)
-//       .expect(200);
+describe("GET /api/v1/appointments/", () => {
+  it("should return all appointments", async () => {
+    const DB = process.env.TEST_DB!;
+    await mongoose.connect(DB).then(() => console.log("Connected"));
+    const response = await request(app)
+      .get("/api/v1/appointments/getAppointments")
+      .set("Authorization", `Bearer ${token}`)
+      .expect("Content-Type", /json/)
+      .expect(200);
 
-//     expect(response.statusCode).toBe(200);
-//     expect(response.body.status).toMatch(/success/);
-//   });
-// });
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toMatch(/success/);
+  });
+});
 
 // describe("GET /api/v1/appointments/getAppointment/:id", () => {
 //   it("should return an appointment", async () => {
@@ -121,8 +123,8 @@ const updateValidData = {
 
 describe("PATCH, /api/v1/appointments", () => {
   it("should update an appointment", async () => {
-    const DB = process.env.TEST_DB!;
-    await mongoose.connect(DB).then(() => console.log("Connected"));
+    // const DB = process.env.TEST_DB!;
+    // await mongoose.connect(DB).then(() => console.log("Connected"));
 
     // const response = await request(app)
     //   .patch(`/api/v1/appointments/updateAppointment/${appointment._id}`)
