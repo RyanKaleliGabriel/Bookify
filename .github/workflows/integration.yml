@@ -45,7 +45,7 @@ jobs:
         
     - name: Set environment variables
       run: | 
-        echo "TEST_DB=mongodb://localhost:27017/bookify" >> $GITHUB_ENV
+        echo "TEST_DB=${{ secrets.TEST_DB }}" >> $GITHUB_ENV
         echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
         echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> $GITHUB_ENV
         echo "JWT_COOKIE_EXPIRES_IN=${{secrets.JWT_COOKIE_EXPIRES_IN}}" >> $GITHUB_ENV
