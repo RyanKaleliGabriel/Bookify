@@ -46,7 +46,7 @@ jobs:
 
     - name: Run tests
       env: 
-        TEST_DB : mongodb://${{ secrets.DB_NAME }}:${{ secrets.DB_PASSWORD }}@localhost:27017/bookify
+        TEST_DB : mongodb://localhost:27017/bookify
 
       run: npm test
 
