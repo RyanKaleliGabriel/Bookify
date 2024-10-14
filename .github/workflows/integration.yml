@@ -43,8 +43,18 @@ jobs:
         echo "MongoDB did not start in time" && exit 1
 
         
-    - name: Set TEST_DB environment variable
-      run: echo "TEST_DB=mongodb://localhost:27017/bookify" >> $GITHUB_ENV
+    - name: Set environment variables
+      run: | 
+        echo "TEST_DB=mongodb://localhost:27017/bookify" >> $GITHUB_ENV
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+        echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }} >> $GITHUB_ENV
+        echo "JWT_COOKIE_EXPIRES_IN=${{secrets.JWT_COOKIE_EXPIRES_IN}} >> $GITHUB_ENV
+        echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }} >> $GITHUB_ENV
+        echo "EMAIL_PORT=${{ secrets.EMAIL_PORT}} >> $GITHUB_ENV
+        echo "EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }} >> $GITHUB_ENV
+        echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} >> $GITHUB_ENV
+        echo "EMAIL_HOST=${{ secrets.EMAIL_HOST}} >> $GITHUB_ENV
+
 
     - name: Install dependencies
       run: npm install
