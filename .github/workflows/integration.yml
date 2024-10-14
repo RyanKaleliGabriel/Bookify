@@ -13,6 +13,20 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    services:
+          mongo:
+            image: mongo:6.0
+            env:
+              MONGO_INITDB_ROOT_USERNAME: ${{secrets.DB_NAME}}
+              MONGO_INITDB_ROOT_PASSWORD: ${{secrets.DB_PASSWORD}}
+              MONGO_INITDB_DATABASE: bookify
+              options: >-
+                --health-cmd "mongo --eval 'db.adminCommand(\"ping\")'" 
+                --health-interval 10s
+                --health-timeout 5s
+                --health-retries 5
+            ports:
+              - 27017:27017
     strategy:
       matrix:
         node-version: [20.x]
@@ -32,7 +46,7 @@ jobs:
 
     - name: Run tests
       env: 
-        TEST_DB : ${{ secrets.TEST_DB }}
+        TEST_DB : mongodb://${{ secrets.DB_NAME }}:${{ secrets.DB_PASSWORD }}@localhost:27017/bookify
 
       run: npm test
 
