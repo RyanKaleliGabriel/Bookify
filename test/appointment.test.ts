@@ -7,7 +7,7 @@ import { AppointmentDocument } from "../models/Appointment";
 
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import Client from "../models/Client";
-dotenv.config({ path: "../config.env" });
+// dotenv.config({ path: "../config.env" });
 
 const TIME_IN_SECONDS = 10 * 1000;
 jest.setTimeout(TIME_IN_SECONDS);
@@ -36,10 +36,10 @@ const updateValidData = {
 // it's crucial to manage the connection lifecycle to prevent Jest from hanging due to open connections.
 
 beforeAll(async () => {
-  const DB = process.env.TEST_DB!;
+  const DB = process.env.TEST_DB! ;
   try {
     await mongoose.connect(DB);
-    console.log("Connected to the database for appointment service testing");
+    console.log(`Connected to the database for appointment service testing at ${DB}`);
     // Sign up a new user
     const signupResponse = await request(app)
       .post("/api/v1/users/signup")
