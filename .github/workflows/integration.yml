@@ -46,7 +46,7 @@ jobs:
 
     - name: Run tests
       env: 
-        TEST_DB : mongodb://${{ secrets.DB_ROOT_USERNAME }}:${{ secrets.DB_ROOT_PASSWORD }}@localhost:27017/bookify?authSource=admin
+        TEST_DB : mongodb://${{ secrets.DB_NAME }}:${{ secrets.DB_PASSWORD }}@localhost:27017/bookify?authSource=admin
 
       run: npm test
 
