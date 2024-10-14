@@ -39,7 +39,7 @@ jobs:
 
     - name: Run tests
       env: 
-        TEST_DB : mongodb://${{ secrets.DB_NAME }}:${{ secrets.DB_PASSWORD }}@localhost:27017/bookify?authSource=admin
+        TEST_DB : mongodb+srv://kaleligabriel6:MSY0iI6DHnWW9sVy@cluster0.75jojyu.mongodb.net/bookify?retryWrites=true&w=majority&appName=Cluster0
 
       run: npm test
 
