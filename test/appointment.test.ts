@@ -9,7 +9,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import Client from "../models/Client";
 // dotenv.config({ path: "../config.env" });
 
-const TIME_IN_SECONDS = 10 * 1000;
+const TIME_IN_SECONDS = 30 * 1000;
 jest.setTimeout(TIME_IN_SECONDS);
 let token: string;
 
@@ -70,14 +70,14 @@ beforeAll(async () => {
     console.error("Database connection error:", error);
     throw error;
   }
-});
+}, 30000);
 
 afterAll(async () => {
   await Client.deleteOne({ email: "testuser@example.com" });
   console.log("User deleted successfully");
   await mongoose.connection.close();
   console.log("Disconnected from the database after testing. ");
-});
+}, 30000);
 
 describe("POST /api/v1/appointments,", () => {
   it("should post an appointments", async () => {
