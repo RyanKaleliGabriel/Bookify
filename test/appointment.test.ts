@@ -36,10 +36,20 @@ const updateValidData = {
 // it's crucial to manage the connection lifecycle to prevent Jest from hanging due to open connections.
 
 beforeAll(async () => {
-  const DB = process.env.TEST_DB! ;
+  const DB = process.env.TEST_DB!;
+  const JWT_SECRET = process.env.JWT_SECRET;
+  const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+  const JWT_COOKIE_EXPIRES_IN = process.env.JWT_COOKIE_EXPIRES_IN;
+  const EMAIL_FROM = process.env.EMAIL_FROM;
+  const EMAIL_PORT = process.env.EMAIL_PORT;
+  const EMAIL_USERNAME = process.env.EMAIL_USERNAME;
+  const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+  const EMAIL_HOST = process.env.EMAIL_HOST;
   try {
     await mongoose.connect(DB);
-    console.log(`Connected to the database for appointment service testing at ${DB}`);
+    console.log(
+      `Connected to the database for appointment service testing at ${DB}`
+    );
     // Sign up a new user
     const signupResponse = await request(app)
       .post("/api/v1/users/signup")
@@ -95,7 +105,6 @@ describe("POST /api/v1/appointments,", () => {
 
 describe("GET /api/v1/appointments/", () => {
   it("should return all appointments", async () => {
-
     const response = await request(app)
       .get("/api/v1/appointments/getAppointments")
       .set("Authorization", `Bearer ${token}`)
@@ -122,7 +131,6 @@ describe("GET /api/v1/appointments/getAppointment/:id", () => {
 
 describe("PATCH, /api/v1/appointments", () => {
   it("should update an appointment", async () => {
-
     const response = await request(app)
       .patch(`/api/v1/appointments/updateAppointment/${appointment._id}`)
       .set("Authorization", `Bearer ${token}`)
