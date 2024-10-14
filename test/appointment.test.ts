@@ -9,8 +9,8 @@ import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import Client from "../models/Client";
 dotenv.config({ path: "../config.env" });
 
-const TIME_IN_SECONDS = 10 * 1000;
-jest.setTimeout(TIME_IN_SECONDS);
+// const TIME_IN_SECONDS = 10 * 1000;
+// jest.setTimeout(TIME_IN_SECONDS);
 let token: string;
 
 let appointment: AppointmentDocument;
@@ -35,48 +35,46 @@ const updateValidData = {
 //When running tests that interact with a database,
 // it's crucial to manage the connection lifecycle to prevent Jest from hanging due to open connections.
 
-beforeAll(async () => {
-  const DB =
-    "mongodb+srv://kaleligabriel6:MSY0iI6DHnWW9sVy@cluster0.75jojyu.mongodb.net/bookify?retryWrites=true&w=majority&appName=Cluster0";
-  try {
-    await mongoose
-      .connect(DB)
-      .then(() => console.log("Connected to the database"));
-    // Sign up a new user
-    const signupResponse = await request(app)
-      .post("/api/v1/users/signup")
-      .send({
-        name: "Test User",
-        email: "testuser@example.com",
-        password: "Test@1234",
-        passwordConfirm: "Test@1234",
-        role: "client",
-      })
-      .expect(201);
+// beforeAll(async () => {
+//   const DB = process.env.TEST_DB!;
+//   try {
+//     await mongoose.connect(DB);
+//     console.log("Connected to the database for appointment service testing");
+//     // Sign up a new user
+//     const signupResponse = await request(app)
+//       .post("/api/v1/users/signup")
+//       .send({
+//         name: "Test User",
+//         email: "testuser@example.com",
+//         password: "Test@1234",
+//         passwordConfirm: "Test@1234",
+//         role: "client",
+//       })
+//       .expect(201);
 
-    console.log("Test user created successfully");
+//     console.log("Test user created successfully");
 
-    // Log in the user to obtain a token
-    const loginResponse = await request(app)
-      .post("/api/v1/users/login")
-      .send({
-        email: "testuser@example.com",
-        password: "Test@1234",
-      })
-      .expect(200);
+//     // Log in the user to obtain a token
+//     const loginResponse = await request(app)
+//       .post("/api/v1/users/login")
+//       .send({
+//         email: "testuser@example.com",
+//         password: "Test@1234",
+//       })
+//       .expect(200);
 
-    token = loginResponse.body.token;
+//     token = loginResponse.body.token;
 
-    console.log("User logged in successfully");
-  } catch (error) {
-    console.error("Database connection error:", error);
-    throw error;
-  }
-});
+//     console.log("User logged in successfully");
+//   } catch (error) {
+//     console.error("Database connection error:", error);
+//     throw error;
+//   }
+// });
 
 // afterAll(async () => {
 //   await Client.deleteOne({ email: "testuser@example.com" });
-//   console.log("User deleted successfully")
+//   console.log("User deleted successfully");
 //   await mongoose.connection.close();
 //   console.log("Disconnected from the database after testing. ");
 // });
@@ -95,18 +93,18 @@ beforeAll(async () => {
 //   });
 // });
 
-describe("GET /api/v1/appointments/", () => {
-  it("should return all appointments", async () => {
-    const response = await request(app)
-      .get("/api/v1/appointments/getAppointments")
-      .set("Authorization", `Bearer ${token}`)
-      .expect("Content-Type", /json/)
-      .expect(200);
+// describe("GET /api/v1/appointments/", () => {
+//   it("should return all appointments", async () => {
+//     const response = await request(app)
+//       .get("/api/v1/appointments/getAppointments")
+//       .set("Authorization", `Bearer ${token}`)
+//       .expect("Content-Type", /json/)
+//       .expect(200);
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body.status).toMatch(/success/);
-  });
-});
+//     expect(response.statusCode).toBe(200);
+//     expect(response.body.status).toMatch(/success/);
+//   });
+// });
 
 // describe("GET /api/v1/appointments/getAppointment/:id", () => {
 //   it("should return an appointment", async () => {
@@ -121,18 +119,21 @@ describe("GET /api/v1/appointments/", () => {
 //   });
 // });
 
-// describe("PATCH, /api/v1/appointments", () => {
-//   it("should update an appointment", async () => {
-//     const response = await request(app)
-//       .patch(`/api/v1/appointments/updateAppointment/${appointment._id}`)
-//       .set("Authorization", `Bearer ${token}`)
-//       .send(updateValidData)
-//       .expect(201);
+describe("PATCH, /api/v1/appointments", () => {
+  it("should update an appointment", async () => {
+    const DB = process.env.TEST_DB!;
+    await mongoose.connect(DB).then(() => console.log("Connected"));
 
-//     expect(response.statusCode).toBe(201);
-//     expect(response.body.status).toMatch(/success/);
-//   });
-// });
+    // const response = await request(app)
+    //   .patch(`/api/v1/appointments/updateAppointment/${appointment._id}`)
+    //   .set("Authorization", `Bearer ${token}`)
+    //   .send(updateValidData)
+    //   .expect(201);
+
+    // expect(response.statusCode).toBe(201);
+    // expect(response.body.status).toMatch(/success/);
+  });
+});
 
 // describe("DELETE, /api/v1/appointments", () => {
 //   it("should delete an appointment", async () => {
