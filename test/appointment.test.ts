@@ -52,6 +52,8 @@ beforeAll(async () => {
       })
       .expect(201);
 
+      console.log("Test user created successfully")
+
     // Log in the user to obtain a token
     const loginResponse = await request(app)
       .post("/api/v1/users/login")
@@ -62,6 +64,8 @@ beforeAll(async () => {
       .expect(200);
 
     token = loginResponse.body.token;
+
+    console.log("User logged in successfully")
   } catch (error) {
     console.error("Database connection error:", error);
     throw error;
@@ -70,6 +74,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await Client.deleteOne({ email: "testuser@example.com" });
+  console.log("User deleted successfully")
   await mongoose.connection.close();
   console.log("Disconnected from the database after testing. ");
 });
