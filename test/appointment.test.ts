@@ -7,7 +7,7 @@ import { AppointmentDocument } from "../models/Appointment";
 
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import Client from "../models/Client";
-// dotenv.config({ path: "../config.env" });
+dotenv.config({ path: "../config.env" });
 
 const TIME_IN_SECONDS = 30 * 1000;
 jest.setTimeout(TIME_IN_SECONDS);
@@ -37,14 +37,7 @@ const updateValidData = {
 
 beforeAll(async () => {
   const DB = process.env.TEST_DB!;
-  const JWT_SECRET = process.env.JWT_SECRET;
-  const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
-  const JWT_COOKIE_EXPIRES_IN = process.env.JWT_COOKIE_EXPIRES_IN;
-  const EMAIL_FROM = process.env.EMAIL_FROM;
-  const EMAIL_PORT = process.env.EMAIL_PORT;
-  const EMAIL_USERNAME = process.env.EMAIL_USERNAME;
-  const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-  const EMAIL_HOST = process.env.EMAIL_HOST;
+
   try {
     await mongoose.connect(DB);
     console.log(
