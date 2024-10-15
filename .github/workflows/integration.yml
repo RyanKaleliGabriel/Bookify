@@ -91,3 +91,14 @@ jobs:
       with: 
         push: true
         tags: ryankaleligabriel/bookify-api-${{ github.sha }}:latest
+        build-args: |
+          NODE_ENV=test
+          TEST_DB=${{ secrets.TEST_DB }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
+          JWT_COOKIE_EXPIRES_IN=${{ secrets.JWT_COOKIE_EXPIRES_IN }}
+          EMAIL_FROM=${{ secrets.EMAIL_FROM }}
+          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+          EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_HOST=${{ secrets.EMAIL_HOST }}
