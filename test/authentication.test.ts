@@ -5,7 +5,7 @@ import request from "supertest";
 import app from "../app";
 import Client, { ClientDocument } from "../models/Client";
 
-dotenv.config({ path: "../config.env" });
+// dotenv.config({ path: "../config.env" });
 const TIME_IN_SECONDS = 10 * 1000;
 jest.setTimeout(TIME_IN_SECONDS);
 
