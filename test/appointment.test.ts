@@ -7,7 +7,7 @@ import { AppointmentDocument } from "../models/Appointment";
 
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import Client from "../models/Client";
-// dotenv.config({ path: "../config.env" });
+dotenv.config({ path: "../config.env" });
 
 const TIME_IN_SECONDS = 30 * 1000;
 jest.setTimeout(TIME_IN_SECONDS);
