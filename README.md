@@ -30,7 +30,7 @@
 ## Architecture and principle
 **MVC** - Utilised the Model-View-Controller Architecture, this ia a design pattern that separates and application into three main logical components Model, View and Controller. It isolates the business logic and presentation layer fro each other
 
-**DRY** - Don't repeat yourself is a principle used in this project to reduce the repition of patterns and code duplication in fvaour of abstractions and avoiding redundancy especially in the controller level.
+**DRY** - Don't repeat yourself is a principle used in this project to reduce the repition of patterns and code duplication in favour of abstractions and avoiding redundancy especially in the controller level.
 
  ## Testing
 **Integration Tests** - Tested the interaction between different Components in the API. In this case tested the interaction between the controllers and database.
