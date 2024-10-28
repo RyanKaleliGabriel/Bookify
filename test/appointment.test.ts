@@ -31,8 +31,8 @@ const updateValidData = {
   attendant: "670653a7b5562f2be79765d5",
 };
 
-//Connect to the database before running any test
-//When running tests that interact with a database,
+// Connect to the database before running any test
+// When running tests that interact with a database,
 // it's crucial to manage the connection lifecycle to prevent Jest from hanging due to open connections.
 
 beforeAll(async () => {

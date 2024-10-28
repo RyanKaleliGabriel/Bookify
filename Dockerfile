@@ -33,3 +33,15 @@ ENV NODE_ENV=production
 
 #Start the application
 CMD ["npm", "start"]
+
+
+  # deploy:
+  #  runs-on: ubuntu-latest
+  #  needs: build
+  #  steps:
+  #     - name: Deploy to production 
+  #       uses: johnbeynon/render-deploy-action@v0.0.8
+  #       with:
+  #         service-id: ${{ secrets.MY_RENDER_SERVICE_ID }}
+  #         api-key: ${{ secrets.MY_RENDER_API_KEY }}
+  #         wait-for-success: true
