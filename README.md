@@ -37,7 +37,7 @@
 
 ## Some DevOps
 
-**Multi-Stage Docker0 Builds** - This separated the build environment from the final runtime environment, reducing the image size and attack surface.
+**Multi-Stage Docker Builds** - This separated the build environment from the final runtime environment, reducing the image size and attack surface.
 
 **Continuous Integartion and deployment** - Used github actions to build the applications pipeline that was linked to docker hub.
 
