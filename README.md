@@ -1,6 +1,5 @@
 # Bookify API
-
-> Bookify is a scheduling and appointment booking Restful API that allows attendants and clients to interact seamlessly. Clients can book appointments, while attendants can manage their availability. 
+Bookify is a scheduling and appointment booking Restful API that allows attendants and clients to interact seamlessly. Clients can book appointments, while attendants can manage their availability. 
 
 ## Table of Contents
 - [Features](#features)
