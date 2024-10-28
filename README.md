@@ -30,7 +30,7 @@
 ## Architecture and principle
 **MVC** - Utilised the Model-View-Controller Architecture, this ia a design pattern that separates and application into three main logical components Model, View and Controller. It isolates the business logic and presentation layer fro each other
 
-**DRY** - Don't repeat yourself is a principle used in this project to reduce the repition of patterns and code duplication in fvaour of abstractions and avoiding redundancy especially in the controller level.
+**DRY** - Don't repeat yourself is a principle used in this project to reduce the repition of patterns and code duplication in favour of abstractions and avoiding redundancy especially in the controller level.
 
  ## Testing
 **Integration Tests** - Tested the interaction between different Components in the API. In this case tested the interaction between the controllers and database.
@@ -53,7 +53,7 @@
 **X-Powered-By Header** - Disbaled this header to reduce fingerprinting. Reduces the ability of attacker to determine the software the server uses.
 **Setting Appropriate Headers** - Used the helmet package to protect the app from some well known vulnerabilities by setting HTTP headers appropriately.
 **Rate Limiting** - Used a package to limit the number of  requests coming from the same IP to 100 in an hour. This helps in preventing Brute force and DDOS attacks
->  **NOSql injections** - Used mongo-sanitize package to prevent nosql injection attacks.
+**NOSql injections** - Used mongo-sanitize package to prevent nosql injection attacks.
 
 ## Performance Practices
 **Gzip Compression** - Decreased the size of the response body.
