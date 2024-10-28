@@ -8,8 +8,8 @@ Bookify is a scheduling and appointment booking Restful API that allows attendan
 - [Testing](#testing)
 - [Some DevOps](#some-devops)
 - [Deployment](#deployment)
-- [Security Practices](security-practices)
-- [Performance Practices](performance-practices)
+- [Security Practices](#security-practices)
+- [Performance Practices](#performance-practices)
 
 
 ## Features
