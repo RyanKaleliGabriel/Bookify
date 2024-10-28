@@ -31,8 +31,8 @@ const createSendToken = (
         Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 100
     ),
     httpOnly: true,
-    // secure: req.secure || req.header("x-forwaded-proto") === "https",
-    secure:false
+    secure: req.secure || req.header("x-forwaded-proto") === "https",
+    // secure:false
   });
 
   //Return response

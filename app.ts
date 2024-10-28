@@ -21,18 +21,23 @@ const globalErrorController = require("./controllers/errorController");
 // Intialize application with express
 const app = express();
 
-//For secure cookie options
-// app.enable("trust proxy");
+// For secure cookie options
+app.enable("trust proxy");
 
 //Email templating
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
+// Reducing Finger printing.
+// By default express sends the X-powered-By response header that you can disable using the app.disable() method.
+app.disable("x-powered-by");
+
 //Enable cors for all origins
-app.use(cors({
-  origin:'http://localhost:5173',
-  credentials:true
-}));
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 
 // Cors for non-simple requests(put, patch, delete or request that send cookies or use non standard headers),
 // The browser does an option request to see if the request is safe,
