@@ -33,6 +33,8 @@
 **DRY** - Don't repeat yourself is a principle used in this project to reduce the repition of patterns and code duplication in favour of abstractions and avoiding redundancy especially in the controller level.
 
  ## Testing
+**Unit Tests** - Focused on writing unit tests for the utility functions that were reusable.
+
 **Integration Tests** - Tested the interaction between different Components in the API. In this case tested the interaction between the controllers and database.
 
 ## Some DevOps
@@ -53,9 +55,12 @@
 **X-Powered-By Header** - Disbaled this header to reduce fingerprinting. Reduces the ability of attacker to determine the software the server uses.
 
 **Setting Appropriate Headers** - Used the helmet package to protect the app from some well known vulnerabilities by setting HTTP headers appropriately.
+
 **Rate Limiting** - Used a package to limit the number of  requests coming from the same IP to 100 in an hour. This helps in preventing Brute force and DDOS attacks
+
 **NOSql injections** - Used mongo-sanitize package to prevent nosql injection attacks.
 
 ## Performance Practices
 **Gzip Compression** - Decreased the size of the response body.
+
 **Logging** - Used morgan to log the application's activity
