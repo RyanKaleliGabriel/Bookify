@@ -145,7 +145,13 @@ export const updateAppointment = catchAsync(
         return next(new AppError(errorsAvail[0].message, errorsAvail[0].code));
       }
 
-      const errorsConflict = await confilctingUpdate(attendant, date_new, end, start, req.params.id);
+      const errorsConflict = await confilctingUpdate(
+        attendant,
+        date_new,
+        end,
+        start,
+        req.params.id
+      );
       if (errorsConflict.length > 0 && errorsConflict) {
         return next(
           new AppError(errorsConflict[0].message, errorsConflict[0].code)
@@ -172,18 +178,16 @@ export const updateAppointment = catchAsync(
 );
 
 // DELETE AN APPOINTMENT
-export const deleteAppointment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const appointment = await Appointment.findByIdAndDelete(req.params.id);
-  if (!appointment) {
-    return next(new AppError("No document with that id was found", 404));
-  }
+export const deleteAppointment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const appointment = await Appointment.findByIdAndDelete(req.params.id);
+    if (!appointment) {
+      return next(new AppError("No document with that id was found", 404));
+    }
 
-  return res.status(204).json({
-    status: "success",
-    data: null,
-  });
-};
+    return res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  }
+);

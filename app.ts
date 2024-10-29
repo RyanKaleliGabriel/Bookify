@@ -22,7 +22,7 @@ const globalErrorController = require("./controllers/errorController");
 const app = express();
 
 // For secure cookie options
-app.enable("trust proxy");
+// app.enable("trust proxy");
 
 //Email templating
 app.set("view engine", "pug");

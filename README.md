@@ -32,6 +32,8 @@ Bookify is a scheduling and appointment booking Restful API that allows attendan
 **DRY** - Don't repeat yourself is a principle used in this project to reduce the repition of patterns and code duplication in favour of abstractions and avoiding redundancy especially in the controller level.
 
  ## Testing
+**Unit Tests** - Focused on writing unit tests for the utility functions that were reusable.
+
 **Integration Tests** - Tested the interaction between different Components in the API. In this case tested the interaction between the controllers and database.
 
 ## Some DevOps
