@@ -37,7 +37,7 @@
 
 ## Some DevOps
 
-**Multi-Stage Docker0 Builds** - This separated the build environment from the final runtime environment, reducing the image size and attack surface.
+**Multi-Stage Docker Builds** - This separated the build environment from the final runtime environment, reducing the image size and attack surface.
 
 **Continuous Integartion and deployment** - Used github actions to build the applications pipeline that was linked to docker hub.
 
@@ -51,6 +51,7 @@
 
 ## Security Practices
 **X-Powered-By Header** - Disbaled this header to reduce fingerprinting. Reduces the ability of attacker to determine the software the server uses.
+
 **Setting Appropriate Headers** - Used the helmet package to protect the app from some well known vulnerabilities by setting HTTP headers appropriately.
 **Rate Limiting** - Used a package to limit the number of  requests coming from the same IP to 100 in an hour. This helps in preventing Brute force and DDOS attacks
 **NOSql injections** - Used mongo-sanitize package to prevent nosql injection attacks.

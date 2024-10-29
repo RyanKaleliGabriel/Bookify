@@ -19,6 +19,7 @@ class APIfeatures {
 
     //Identify elements that are not going o be filtered in the query object
     const excludedFields = ["page", "sort", "limit", "fields"];
+    console.log(queryObj)
 
     //Delete the unwanted fields
     excludedFields.forEach((el) => delete queryObj[el]);
@@ -26,8 +27,12 @@ class APIfeatures {
     /// The element that will be used is converted to a string
     let queryStr = JSON.stringify(queryObj);
 
-    //Configuring the string to be understood by mongodb - from {"age": {"gte": 25}} to {"age": {"gte": 25}}
+    //Configuring the string to be understood by mongodb - from {"age": {"gte": 25}} to {"age": {"$gte": 25}}
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // console.log("Parsed query string:", queryStr); // Debug log
+
 
     //string is converted to an object
     this.query = this.query.find(JSON.parse(queryStr));
@@ -38,6 +43,8 @@ class APIfeatures {
   sort() {
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(",").join(" ");
+
+      // console.log("Parsed query string", sortBy)
 
       this.query = this.query.sort(sortBy);
     }
@@ -56,7 +63,7 @@ class APIfeatures {
 
   paginate() {
     const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.page * 1 || 3;
+    const limit = this.queryString.limit * 1 || 3;
     const skip = (page - 1) * limit;
 
     this.query = this.query.skip(skip).limit(limit);
